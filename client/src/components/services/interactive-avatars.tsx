@@ -1,26 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { MessageSquare, Globe, Brain, Clock, Volume2, VolumeX, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { InteractiveAvatar } from "@shared/schema";
 
 export default function InteractiveAvatars() {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { data: interactiveAvatars, isLoading } = useQuery<InteractiveAvatar[]>({
-    queryKey: ["/api/samples/interactive-avatars"],
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const publishedAvatars = interactiveAvatars
-    ?.filter(avatar => avatar.isPublished)
-    .sort((a, b) => a.orderIndex - b.orderIndex) || [];
-
-  const featuredAvatar = publishedAvatars[0];
+  // Hardcoded demo video path - replace with your actual interactive avatar demo video
+  const demoVideoUrl = "/interactive-avatar-demo.mp4";
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -38,7 +25,7 @@ export default function InteractiveAvatars() {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !featuredAvatar?.videoUrl) return;
+    if (!video) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -58,7 +45,7 @@ export default function InteractiveAvatars() {
     return () => {
       observer.disconnect();
     };
-  }, [featuredAvatar?.videoUrl]);
+  }, []);
 
   const features = [
     {
@@ -176,91 +163,39 @@ export default function InteractiveAvatars() {
                 </h4>
               </div>
 
-              {isLoading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-64 w-full rounded-xl" />
-                  <Skeleton className="h-20 w-full rounded-xl" />
-                </div>
-              ) : featuredAvatar ? (
-                <>
-                  <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl mb-4">
-                    {featuredAvatar.videoUrl ? (
-                      <div className="video-player-wrapper relative w-full h-full">
-                        <video
-                          ref={videoRef}
-                          src={featuredAvatar.videoUrl}
-                          poster={featuredAvatar.thumbnailUrl || undefined}
-                          className="w-full h-full object-cover"
-                          autoPlay
-                          muted={isMuted}
-                          loop
-                          playsInline
-                        />
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl">
+                <div className="video-player-wrapper relative w-full h-full">
+                  <video
+                    ref={videoRef}
+                    src={demoVideoUrl}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted={isMuted}
+                    loop
+                    playsInline
+                  />
 
-                        <div className="absolute top-3 right-3 opacity-80 hover:opacity-100 transition-opacity z-10">
-                          <Button
-                            onClick={toggleMute}
-                            size="sm"
-                            variant="ghost"
-                            className="rounded-full w-10 h-10 bg-black/40 hover:bg-black/60 text-white border-0 p-0"
-                          >
-                            {isMuted ? (
-                              <VolumeX className="h-4 w-4" />
-                            ) : (
-                              <Volume2 className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <h5 className="text-white font-semibold text-lg">{featuredAvatar.name}</h5>
-                          {featuredAvatar.description && (
-                            <p className="text-white/90 text-sm mt-1">{featuredAvatar.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  {featuredAvatar.supportedLanguages.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-white/50">
-                      <p className="text-xs text-slate-600 mb-2">
-                        <Globe className="h-3 w-3 inline mr-1" />
-                        Speaks {featuredAvatar.supportedLanguages.length}+ languages
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {featuredAvatar.supportedLanguages.slice(0, 8).map((lang, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {lang}
-                          </Badge>
-                        ))}
-                        {featuredAvatar.supportedLanguages.length > 8 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{featuredAvatar.supportedLanguages.length - 8} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20"></div>
-                  <div className="relative z-10 h-full flex flex-col items-center justify-center p-6 text-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl mb-4">
-                      <MessageSquare className="h-12 w-12 text-white" />
-                    </div>
-                    <p className="text-slate-600 text-sm">Interactive avatar demo coming soon</p>
+                  <div className="absolute top-3 right-3 opacity-80 hover:opacity-100 transition-opacity z-10">
                     <Button
-                      onClick={scrollToContact}
-                      className="mt-4"
+                      onClick={toggleMute}
                       size="sm"
+                      variant="ghost"
+                      className="rounded-full w-10 h-10 bg-black/40 hover:bg-black/60 text-white border-0 p-0"
                     >
-                      Request Demo
+                      {isMuted ? (
+                        <VolumeX className="h-4 w-4" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <h5 className="text-white font-semibold text-lg">Interactive AI Avatar</h5>
+                    <p className="text-white/90 text-sm mt-1">Real-time conversational digital human</p>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </aside>
         </div>
