@@ -1,3 +1,19 @@
 {
-  "media": []
+  "media": [
+    {
+      "id": "a8d44972-56bc-47f8-a518-7742b2260d54",
+      "title": "AI Video Ad Demo",
+      "category": "AI Video Studio",
+      "fileType": "video",
+      "originalFilename": "https://gumlet.tv/watch/694d0e18f1ad267a06552696",
+      "compressedFilePath": "https://gumlet.tv/watch/694d0e18f1ad267a06552696",
+      "thumbnailPath": null,
+      "duration": "30s",
+      "fileSize": "External",
+      "isExternalLink": true,
+      "metadata": null,
+      "createdAt": "2025-12-25T10:03:57.264Z",
+      "updatedAt": "2025-12-25T10:03:57.264Z"
+    }
+  ]
 }
