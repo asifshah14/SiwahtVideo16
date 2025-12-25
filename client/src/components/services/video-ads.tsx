@@ -124,13 +124,8 @@ export default function VideoAds() {
                         )}
                       </div>
                     ) : (
-                      // Preview mode for videos without URLs or unsupported platforms - clickable to open video
-                      (<a
-                        href={processedVideo?.originalUrl || featuredVideo.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl aspect-video relative overflow-hidden shadow-2xl cursor-pointer group/preview"
-                      >
+                      // Preview mode for videos without URLs or unsupported platforms
+                      (<div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl aspect-video relative overflow-hidden shadow-2xl">
                         {featuredVideo.thumbnailUrl ? (
                           <img
                             src={featuredVideo.thumbnailUrl}
@@ -144,19 +139,16 @@ export default function VideoAds() {
                         ) : (
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-cyan-600/30"></div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent group-hover/preview:from-black/70 transition-all"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                         <div className="relative z-10 h-full flex items-center justify-center">
                           <div className="text-center text-white">
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-4 mx-auto shadow-2xl floating-animation group-hover/preview:scale-110 transition-transform">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-4 mx-auto shadow-2xl floating-animation">
                               <Play className="h-10 w-10 sm:h-12 sm:w-12 text-white fill-current" />
                             </div>
                             <p className="text-sm sm:text-base opacity-90 font-semibold">{featuredVideo.title}</p>
                             {featuredVideo.description && (
                               <p className="text-xs opacity-70 mt-2 line-clamp-2 max-w-xs mx-auto">{featuredVideo.description}</p>
                             )}
-                            <p className="text-xs opacity-80 mt-3 text-blue-300 group-hover/preview:text-blue-200">
-                              Click to watch video
-                            </p>
                           </div>
                         </div>
                         {/* Video Timeline */}
@@ -165,7 +157,7 @@ export default function VideoAds() {
                             <div className="bg-gradient-to-r from-blue-500 to-cyan-600 h-full w-1/3 rounded-full"></div>
                           </div>
                         </div>
-                      </a>)
+                      </div>)
                     )}
                   </div>
                 ) : (
