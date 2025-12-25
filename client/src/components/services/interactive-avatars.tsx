@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function InteractiveAvatars() {
   const [isMuted, setIsMuted] = useState(true);
+  const [hasVideo, setHasVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Hardcoded demo video path - replace with your actual interactive avatar demo video
@@ -24,8 +25,21 @@ export default function InteractiveAvatars() {
   };
 
   useEffect(() => {
+    // Check if video exists
+    fetch(demoVideoUrl, { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          setHasVideo(true);
+        }
+      })
+      .catch(() => {
+        setHasVideo(false);
+      });
+  }, []);
+
+  useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !hasVideo) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -45,7 +59,7 @@ export default function InteractiveAvatars() {
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [hasVideo]);
 
   const features = [
     {
@@ -164,37 +178,53 @@ export default function InteractiveAvatars() {
               </div>
 
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl">
-                <div className="video-player-wrapper relative w-full h-full">
-                  <video
-                    ref={videoRef}
-                    src={demoVideoUrl}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    muted={isMuted}
-                    loop
-                    playsInline
-                  />
+                {hasVideo ? (
+                  <div className="video-player-wrapper relative w-full h-full">
+                    <video
+                      ref={videoRef}
+                      src={demoVideoUrl}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      muted={isMuted}
+                      loop
+                      playsInline
+                    />
 
-                  <div className="absolute top-3 right-3 opacity-80 hover:opacity-100 transition-opacity z-10">
+                    <div className="absolute top-3 right-3 opacity-80 hover:opacity-100 transition-opacity z-10">
+                      <Button
+                        onClick={toggleMute}
+                        size="sm"
+                        variant="ghost"
+                        className="rounded-full w-10 h-10 bg-black/40 hover:bg-black/60 text-white border-0 p-0"
+                      >
+                        {isMuted ? (
+                          <VolumeX className="h-4 w-4" />
+                        ) : (
+                          <Volume2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                      <h5 className="text-white font-semibold text-lg">Interactive AI Avatar</h5>
+                      <p className="text-white/90 text-sm mt-1">Real-time conversational digital human</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl mb-4">
+                      <MessageSquare className="h-12 w-12 text-white" />
+                    </div>
+                    <p className="text-white/80 text-sm mb-4">Interactive avatar demo coming soon</p>
                     <Button
-                      onClick={toggleMute}
+                      onClick={scrollToContact}
                       size="sm"
-                      variant="ghost"
-                      className="rounded-full w-10 h-10 bg-black/40 hover:bg-black/60 text-white border-0 p-0"
+                      className="bg-blue-600 hover:bg-blue-700"
                     >
-                      {isMuted ? (
-                        <VolumeX className="h-4 w-4" />
-                      ) : (
-                        <Volume2 className="h-4 w-4" />
-                      )}
+                      Request Demo
                     </Button>
                   </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                    <h5 className="text-white font-semibold text-lg">Interactive AI Avatar</h5>
-                    <p className="text-white/90 text-sm mt-1">Real-time conversational digital human</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </aside>
