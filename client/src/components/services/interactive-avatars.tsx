@@ -1,13 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { MessageSquare, Globe, Brain, Clock, Play, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { MessageSquare, Globe, Brain, Clock, Play, Volume2, VolumeX, Sparkles, PhoneOff, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import type { InteractiveAvatar, DemoConversation } from "@shared/schema";
 
 type PersonalityType = "professional" | "friendly" | "educational" | "sales";
 type ConversationStatus = "idle" | "listening" | "thinking" | "speaking";
+
+interface TavusConversation {
+  conversation_id: string;
+  conversation_url: string;
+  conversation_name?: string;
+  session_id?: string;
+}
 
 export default function InteractiveAvatars() {
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityType>("professional");
@@ -15,7 +23,10 @@ export default function InteractiveAvatars() {
   const [currentConversation, setCurrentConversation] = useState<DemoConversation | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [chatHistory, setChatHistory] = useState<Array<{ type: 'user' | 'avatar'; message: string }>>([]);
+  const [liveConversation, setLiveConversation] = useState<TavusConversation | null>(null);
+  const [isLiveMode, setIsLiveMode] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
 
   const { data: interactiveAvatars, isLoading } = useQuery<InteractiveAvatar[]>({
     queryKey: ["/api/samples/interactive-avatars"],
@@ -23,11 +34,107 @@ export default function InteractiveAvatars() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: replicas } = useQuery<any[]>({
+    queryKey: ["/api/tavus/replicas"],
+    refetchOnWindowFocus: false,
+    enabled: isLiveMode,
+  });
+
+  const { data: personas } = useQuery<any[]>({
+    queryKey: ["/api/tavus/personas"],
+    refetchOnWindowFocus: false,
+    enabled: isLiveMode,
+  });
+
   const publishedAvatars = interactiveAvatars
     ?.filter(avatar => avatar.isPublished)
     .sort((a, b) => a.orderIndex - b.orderIndex) || [];
 
   const featuredAvatar = publishedAvatars[0];
+
+  const startConversationMutation = useMutation({
+    mutationFn: async (avatarId: string) => {
+      const defaultReplicaId = replicas?.[0]?.replica_id || "rfe12d8b9597";
+      const defaultPersonaId = personas?.[0]?.persona_id || "pdced222244b";
+
+      const response = await fetch("/api/tavus/conversations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          replica_id: defaultReplicaId,
+          persona_id: defaultPersonaId,
+          conversation_name: `Interactive Avatar Chat - ${new Date().toLocaleTimeString()}`,
+          avatar_id: avatarId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start conversation");
+      }
+
+      return response.json() as Promise<TavusConversation>;
+    },
+    onSuccess: (data) => {
+      setLiveConversation(data);
+      toast({
+        title: "Conversation Started",
+        description: "You can now speak with the AI avatar!",
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to start conversation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to start the conversation. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const endConversationMutation = useMutation({
+    mutationFn: async (conversationId: string) => {
+      const response = await fetch(`/api/tavus/conversations/${conversationId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to end conversation");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      setLiveConversation(null);
+      setIsLiveMode(false);
+      toast({
+        title: "Conversation Ended",
+        description: "The conversation has been ended successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to end conversation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to end the conversation.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleStartLiveConversation = () => {
+    if (featuredAvatar?.id) {
+      setIsLiveMode(true);
+      startConversationMutation.mutate(featuredAvatar.id);
+    }
+  };
+
+  const handleEndLiveConversation = () => {
+    if (liveConversation?.conversation_id) {
+      endConversationMutation.mutate(liveConversation.conversation_id);
+    }
+  };
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -262,7 +369,34 @@ export default function InteractiveAvatars() {
               ) : featuredAvatar ? (
                 <>
                   <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl mb-4">
-                    {featuredAvatar.videoUrl && (
+                    {liveConversation ? (
+                      <div className="video-player-wrapper relative w-full h-full">
+                        <iframe
+                          src={liveConversation.conversation_url}
+                          allow="camera; microphone; display-capture; autoplay; compute-pressure"
+                          className="w-full h-full"
+                          style={{ border: 'none' }}
+                        />
+                        <div className="absolute top-3 right-3 z-10">
+                          <Button
+                            onClick={handleEndLiveConversation}
+                            size="sm"
+                            variant="destructive"
+                            className="rounded-full"
+                            disabled={endConversationMutation.isPending}
+                          >
+                            <PhoneOff className="h-4 w-4 mr-2" />
+                            End Call
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                          <Badge className="bg-red-500 text-white animate-pulse">
+                            <span className="w-2 h-2 bg-white rounded-full mr-2 inline-block"></span>
+                            Live Conversation
+                          </Badge>
+                        </div>
+                      </div>
+                    ) : featuredAvatar.videoUrl ? (
                       <div className="video-player-wrapper relative w-full h-full">
                         <video
                           ref={videoRef}
@@ -297,7 +431,7 @@ export default function InteractiveAvatars() {
                           )}
                         </div>
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   <div className="mb-4">
@@ -339,22 +473,45 @@ export default function InteractiveAvatars() {
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-slate-600 mb-2">Try these prompts:</p>
-                    <div className="grid grid-cols-1 gap-2">
-                      {demoPrompts.map((prompt) => (
-                        <button
-                          key={prompt.id}
-                          onClick={() => handleDemoPromptClick(prompt)}
-                          disabled={conversationStatus !== "idle"}
-                          className="bg-white hover:bg-blue-50 text-slate-700 px-3 py-2 rounded-lg text-xs text-left transition-colors border border-slate-200 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between group"
-                        >
-                          <span className="flex-1">{prompt.prompt}</span>
-                          <Play className="h-3 w-3 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </button>
-                      ))}
+                  {!liveConversation ? (
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleStartLiveConversation}
+                        disabled={startConversationMutation.isPending}
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                      >
+                        <Video className="h-5 w-5 mr-2" />
+                        {startConversationMutation.isPending ? "Connecting..." : "Start Live Conversation"}
+                      </Button>
+
+                      <div className="pt-2 border-t border-white/30">
+                        <p className="text-xs font-medium text-slate-600 mb-2">Or try these demo prompts:</p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {demoPrompts.map((prompt) => (
+                            <button
+                              key={prompt.id}
+                              onClick={() => handleDemoPromptClick(prompt)}
+                              disabled={conversationStatus !== "idle"}
+                              className="bg-white hover:bg-blue-50 text-slate-700 px-3 py-2 rounded-lg text-xs text-left transition-colors border border-slate-200 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between group"
+                            >
+                              <span className="flex-1">{prompt.prompt}</span>
+                              <Play className="h-3 w-3 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+                      <div className="flex items-center gap-2 text-emerald-700 mb-2">
+                        <Video className="h-5 w-5" />
+                        <span className="font-semibold">Live Conversation Active</span>
+                      </div>
+                      <p className="text-sm text-emerald-600">
+                        You are now connected! Speak naturally with the AI avatar. The avatar can see and hear you.
+                      </p>
+                    </div>
+                  )}
 
                   {featuredAvatar.supportedLanguages.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-white/50">

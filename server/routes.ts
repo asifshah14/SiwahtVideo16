@@ -9,6 +9,7 @@ import { z } from "zod";
 import { adminLogin, adminLogout, requireAuth, checkAuth } from "./middleware/auth";
 import { mediaStorage } from "./media-storage";
 import { mediaProcessor } from "./media-processor";
+import { tavusService } from "./tavus-service";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
@@ -195,6 +196,211 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching interactive avatars:", error);
       res.status(500).json({ error: "Failed to fetch interactive avatars" });
+    }
+  });
+
+  // Tavus API endpoints
+  app.get("/api/tavus/replicas", async (req, res) => {
+    try {
+      const replicas = await tavusService.listReplicas();
+      res.json(replicas);
+    } catch (error) {
+      console.error("Error fetching Tavus replicas:", error);
+      res.status(500).json({ error: "Failed to fetch replicas" });
+    }
+  });
+
+  app.get("/api/tavus/personas", async (req, res) => {
+    try {
+      const personas = await tavusService.listPersonas();
+      res.json(personas);
+    } catch (error) {
+      console.error("Error fetching Tavus personas:", error);
+      res.status(500).json({ error: "Failed to fetch personas" });
+    }
+  });
+
+  app.post("/api/tavus/conversations", async (req, res) => {
+    try {
+      const { replica_id, persona_id, conversation_name, avatar_id } = req.body;
+
+      if (!replica_id || !persona_id) {
+        return res.status(400).json({
+          error: "replica_id and persona_id are required"
+        });
+      }
+
+      const conversation = await tavusService.createConversation({
+        replica_id,
+        persona_id,
+        conversation_name: conversation_name || "New Conversation",
+      });
+
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.VITE_SUPABASE_URL!,
+        process.env.VITE_SUPABASE_ANON_KEY!
+      );
+
+      const userInfo = {
+        ip: req.ip,
+        userAgent: req.get("user-agent"),
+      };
+
+      const { data: session, error } = await supabase
+        .from("conversation_sessions")
+        .insert({
+          conversation_id: conversation.conversation_id,
+          conversation_url: conversation.conversation_url,
+          conversation_name: conversation_name || "New Conversation",
+          avatar_id: avatar_id || null,
+          replica_id,
+          persona_id,
+          status: "active",
+          user_info: userInfo,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error saving conversation session:", error);
+      }
+
+      res.json({
+        ...conversation,
+        session_id: session?.id,
+      });
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      res.status(500).json({ error: "Failed to create conversation" });
+    }
+  });
+
+  app.delete("/api/tavus/conversations/:conversationId", async (req, res) => {
+    try {
+      const { conversationId } = req.params;
+
+      await tavusService.endConversation(conversationId);
+
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.VITE_SUPABASE_URL!,
+        process.env.VITE_SUPABASE_ANON_KEY!
+      );
+
+      const { data: session } = await supabase
+        .from("conversation_sessions")
+        .select("started_at")
+        .eq("conversation_id", conversationId)
+        .single();
+
+      if (session) {
+        const durationSeconds = Math.floor(
+          (new Date().getTime() - new Date(session.started_at).getTime()) / 1000
+        );
+
+        await supabase
+          .from("conversation_sessions")
+          .update({
+            status: "ended",
+            ended_at: new Date().toISOString(),
+            duration_seconds: durationSeconds,
+          })
+          .eq("conversation_id", conversationId);
+      }
+
+      res.json({ success: true, message: "Conversation ended successfully" });
+    } catch (error) {
+      console.error("Error ending conversation:", error);
+      res.status(500).json({ error: "Failed to end conversation" });
+    }
+  });
+
+  app.get("/api/tavus/conversations/:conversationId", async (req, res) => {
+    try {
+      const { conversationId } = req.params;
+      const conversation = await tavusService.getConversationById(conversationId);
+      res.json(conversation);
+    } catch (error) {
+      console.error("Error fetching conversation:", error);
+      res.status(500).json({ error: "Failed to fetch conversation" });
+    }
+  });
+
+  app.post("/api/tavus/personas", requireAuth, async (req, res) => {
+    try {
+      const { persona_name, system_prompt, context, llm_provider, llm_model, default_replica_id, avatar_id } = req.body;
+
+      if (!persona_name || !system_prompt) {
+        return res.status(400).json({
+          error: "persona_name and system_prompt are required"
+        });
+      }
+
+      const persona = await tavusService.createPersona({
+        persona_name,
+        system_prompt,
+        context,
+        llm_provider,
+        llm_model,
+        default_replica_id,
+      });
+
+      if (avatar_id) {
+        const { createClient } = await import("@supabase/supabase-js");
+        const supabase = createClient(
+          process.env.VITE_SUPABASE_URL!,
+          process.env.VITE_SUPABASE_ANON_KEY!
+        );
+
+        await supabase
+          .from("tavus_personas")
+          .insert({
+            persona_id: persona.persona_id,
+            persona_name,
+            avatar_id,
+            system_prompt,
+            context,
+            llm_provider,
+            llm_model,
+            default_replica_id,
+          });
+
+        await supabase
+          .from("interactive_avatars")
+          .update({ tavus_persona_id: persona.persona_id })
+          .eq("id", avatar_id);
+      }
+
+      res.json(persona);
+    } catch (error) {
+      console.error("Error creating persona:", error);
+      res.status(500).json({ error: "Failed to create persona" });
+    }
+  });
+
+  app.get("/api/tavus/sessions", requireAuth, async (req, res) => {
+    try {
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.VITE_SUPABASE_URL!,
+        process.env.VITE_SUPABASE_ANON_KEY!
+      );
+
+      const { data: sessions, error } = await supabase
+        .from("conversation_sessions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        throw error;
+      }
+
+      res.json(sessions || []);
+    } catch (error) {
+      console.error("Error fetching conversation sessions:", error);
+      res.status(500).json({ error: "Failed to fetch conversation sessions" });
     }
   });
 
