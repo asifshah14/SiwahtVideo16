@@ -36,7 +36,7 @@ export function processVideoUrl(url: string): ProcessedVideoUrl {
 
     if (videoId) {
       return {
-        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&muted=1&loop=1&playlist=${videoId}`,
         platform: 'youtube',
         canEmbed: true,
         originalUrl: normalizedUrl
@@ -54,7 +54,7 @@ export function processVideoUrl(url: string): ProcessedVideoUrl {
 
     if (videoId && /^\d+$/.test(videoId)) {
       return {
-        embedUrl: `https://player.vimeo.com/video/${videoId}`,
+        embedUrl: `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&loop=1`,
         platform: 'vimeo',
         canEmbed: true,
         originalUrl: normalizedUrl
@@ -95,7 +95,7 @@ export function processVideoUrl(url: string): ProcessedVideoUrl {
 
     if (videoId) {
       return {
-        embedUrl: `https://gumlet.tv/embed/${videoId}`,
+        embedUrl: `https://gumlet.tv/embed/${videoId}?autoplay=true&muted=true&loop=true&controls=true`,
         platform: 'gumlet',
         canEmbed: true,
         originalUrl: normalizedUrl
