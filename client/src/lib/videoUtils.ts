@@ -83,24 +83,14 @@ export function processVideoUrl(url: string): ProcessedVideoUrl {
     }
   }
 
-  // Gumlet processing
+  // Gumlet processing - Gumlet blocks iframe embedding, so we mark it as not embeddable
   if (normalizedUrl.includes('gumlet.tv')) {
-    let videoId = '';
-
-    if (normalizedUrl.includes('/watch/')) {
-      videoId = normalizedUrl.split('/watch/')[1]?.split('/')[0];
-    } else if (normalizedUrl.includes('/embed/')) {
-      videoId = normalizedUrl.split('/embed/')[1]?.split('/')[0];
-    }
-
-    if (videoId) {
-      return {
-        embedUrl: `https://gumlet.tv/embed/${videoId}?autoplay=true&muted=true&loop=true&controls=true`,
-        platform: 'gumlet',
-        canEmbed: true,
-        originalUrl: normalizedUrl
-      };
-    }
+    return {
+      embedUrl: normalizedUrl,
+      platform: 'gumlet',
+      canEmbed: false,
+      originalUrl: normalizedUrl
+    };
   }
 
   // Direct video file URLs (mp4, webm, ogg)
