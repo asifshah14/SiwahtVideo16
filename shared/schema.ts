@@ -89,6 +89,36 @@ export interface PodcastSample {
   updatedAt: Date;
 }
 
+export interface DemoConversation {
+  id: string;
+  prompt: string;
+  response: string;
+  responseVideoUrl?: string | null;
+  duration: string;
+  category: string;
+}
+
+export interface InteractiveAvatar {
+  id: string;
+  name: string;
+  description?: string | null;
+  videoUrl: string;
+  thumbnailUrl?: string | null;
+  defaultPersonality: string;
+  supportedLanguages: string[];
+  demoConversations: DemoConversation[];
+  voicePreviewUrl?: string | null;
+  isPublished: boolean;
+  orderIndex: number;
+  metadata?: {
+    voiceType?: string;
+    responseTime?: string;
+    specialties?: string[];
+  } | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Admin Media Management
 export interface Media {
   id: string;
@@ -134,6 +164,7 @@ export type InsertAvatar = Omit<Avatar, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertVoiceSample = Omit<VoiceSample, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertEditedVideo = Omit<EditedVideo, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertPodcastSample = Omit<PodcastSample, 'id' | 'createdAt' | 'updatedAt'>;
+export type InsertInteractiveAvatar = Omit<InteractiveAvatar, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertMedia = Omit<Media, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateMedia = Pick<Media, 'title' | 'category' | 'description' | 'audioMetadata'>;
 

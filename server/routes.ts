@@ -155,6 +155,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/samples/interactive-avatars", async (req, res) => {
+    try {
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.VITE_SUPABASE_URL!,
+        process.env.VITE_SUPABASE_ANON_KEY!
+      );
+
+      const { data: avatars, error } = await supabase
+        .from("interactive_avatars")
+        .select("*")
+        .eq("is_published", true)
+        .order("order_index", { ascending: true });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        return res.status(500).json({ error: "Failed to fetch interactive avatars" });
+      }
+
+      const formattedAvatars = (avatars || []).map((avatar: any) => ({
+        id: avatar.id,
+        name: avatar.name,
+        description: avatar.description,
+        videoUrl: avatar.video_url,
+        thumbnailUrl: avatar.thumbnail_url,
+        defaultPersonality: avatar.default_personality,
+        supportedLanguages: avatar.supported_languages || [],
+        demoConversations: avatar.demo_conversations || [],
+        voicePreviewUrl: avatar.voice_preview_url,
+        isPublished: avatar.is_published,
+        orderIndex: avatar.order_index,
+        metadata: avatar.metadata,
+        createdAt: new Date(avatar.created_at),
+        updatedAt: new Date(avatar.updated_at)
+      }));
+
+      res.json(formattedAvatars);
+    } catch (error) {
+      console.error("Error fetching interactive avatars:", error);
+      res.status(500).json({ error: "Failed to fetch interactive avatars" });
+    }
+  });
+
   // Contact form submission
   app.post("/api/contact", async (req, res) => {
     try {

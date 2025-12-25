@@ -41,7 +41,7 @@ export default function Navigation() {
     { id: "avatars", label: "AI Avatars" },
     { id: "voice-synthesis", label: "Voice Ads" },
     { id: "editing", label: "Video Editing" },
-    { id: "podcast", label: "Podcasts" },
+    { id: "interactive-avatars", label: "Interactive AI" },
   ];
 
   return (

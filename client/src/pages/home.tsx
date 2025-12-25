@@ -5,22 +5,22 @@ import VideoAds from "@/components/services/video-ads";
 import Avatars from "@/components/services/avatars";
 import VoiceSynthesis from "@/components/services/voice-synthesis";
 import VideoEditing from "@/components/services/video-editing";
-import PodcastProduction from "@/components/services/podcast-production";
+import InteractiveAvatars from "@/components/services/interactive-avatars";
 import Contact from "@/components/contact";
 import Footer from "@/components/footer";
 
 export default function Home() {
   useEffect(() => {
     // Set page metadata for SEO
-    document.title = "Siwaht - AI Video Ads, Avatars, Voice & Podcast Production | Professional AI Agency";
-    
+    document.title = "Siwaht - AI Video Ads, Interactive Avatars, Voice & Video Production | Professional AI Agency";
+
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Professional AI agency creating custom video ads, realistic avatars, voice ads in 80+ languages, video editing & podcast production. Fast turnaround, 4K quality. Transform your content with AI.');
+      metaDescription.setAttribute('content', 'Professional AI agency creating custom video ads, interactive AI avatars, voice ads in 80+ languages, video editing & conversational digital humans. Fast turnaround, 4K quality. Transform your content with AI.');
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
-      meta.content = 'Professional AI agency creating custom video ads, realistic avatars, voice ads in 80+ languages, video editing & podcast production. Fast turnaround, 4K quality. Transform your content with AI.';
+      meta.content = 'Professional AI agency creating custom video ads, interactive AI avatars, voice ads in 80+ languages, video editing & conversational digital humans. Fast turnaround, 4K quality. Transform your content with AI.';
       document.head.appendChild(meta);
     }
 
@@ -29,7 +29,7 @@ export default function Home() {
     if (!metaKeywords) {
       const keywordsMeta = document.createElement('meta');
       keywordsMeta.name = 'keywords';
-      keywordsMeta.content = 'AI video ads, AI avatars, AI voice synthesis, AI podcast production, video editing AI, multilingual voice ads, custom video creation, professional AI services, Siwaht';
+      keywordsMeta.content = 'AI video ads, interactive AI avatars, AI voice synthesis, conversational avatars, video editing AI, multilingual voice ads, custom video creation, professional AI services, Siwaht';
       document.head.appendChild(keywordsMeta);
     }
 
@@ -75,7 +75,7 @@ export default function Home() {
           <Avatars />
           <VoiceSynthesis />
           <VideoEditing />
-          <PodcastProduction />
+          <InteractiveAvatars />
         </section>
 
         
