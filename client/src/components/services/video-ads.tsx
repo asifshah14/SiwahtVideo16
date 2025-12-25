@@ -88,41 +88,20 @@ export default function VideoAds() {
 
                 {featuredVideo ? (
                   <div className="relative">
-                    {processedVideo && processedVideo.canEmbed ? (
+                    {processedVideo && processedVideo.canEmbed && processedVideo.platform === 'direct' ? (
                       <div className="video-container bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl">
-                        {processedVideo.platform === 'direct' ? (
-                          // Direct video file (mp4, webm, etc.)
-                          (<div className="video-player-wrapper">
-                            <VideoPlayer
-                              src={processedVideo.embedUrl}
-                              poster={featuredVideo.thumbnailUrl || undefined}
-                              title={featuredVideo.title}
-                              className="w-full h-full rounded-xl"
-                              width="100%"
-                              height="100%"
-                              gifLike={true}
-                              data-testid="direct-video-player"
-                            />
-                          </div>)
-                        ) : (
-                          // Embedded video (YouTube, Vimeo, Google Drive)
-                          (<>
-                            <iframe
-                              src={processedVideo.embedUrl}
-                              className="w-full h-full border-0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                              title={`${featuredVideo.title} - AI Video Ad Demo`}
-                              loading="lazy"
-                              data-testid={`${processedVideo.platform}-iframe`}
-                            />
-                            <div className="absolute top-2 right-2 z-10">
-                              <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
-                                {getPlatformName(processedVideo.platform)}
-                              </span>
-                            </div>
-                          </>)
-                        )}
+                        <div className="video-player-wrapper">
+                          <VideoPlayer
+                            src={processedVideo.embedUrl}
+                            poster={featuredVideo.thumbnailUrl || undefined}
+                            title={featuredVideo.title}
+                            className="w-full h-full rounded-xl"
+                            width="100%"
+                            height="100%"
+                            gifLike={true}
+                            data-testid="direct-video-player"
+                          />
+                        </div>
                       </div>
                     ) : (
                       // Preview mode for videos without URLs or external videos
