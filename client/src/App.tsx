@@ -7,7 +7,6 @@ import { lazy, Suspense, useEffect } from "react";
 import { initializeAutoPauseMedia, cleanupAutoPauseMedia } from "@/utils/auto-pause-media";
 
 const Home = lazy(() => import("@/pages/home"));
-const AdminLogin = lazy(() => import("@/pages/admin/login"));
 const AdminDashboard = lazy(() => import("@/pages/admin/dashboard"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
@@ -17,7 +16,6 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={AdminDashboard} />
-        <Route path="/admin/dashboard" component={AdminDashboard} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

@@ -13,9 +13,9 @@
   --card-foreground: hsl(222, 84%, 4.9%);
   --border: hsl(214, 32%, 91%);
   --input: hsl(214, 32%, 91%);
-  --primary: hsl(248, 83%, 65%);
+  --primary: hsl(217, 91%, 60%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(268, 77%, 69%);
+  --secondary: hsl(199, 89%, 48%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --accent: hsl(188, 94%, 43%);
   --accent-foreground: hsl(0, 0%, 100%);
@@ -36,9 +36,9 @@
   --card-foreground: hsl(210, 40%, 98%);
   --border: hsl(217, 32%, 17%);
   --input: hsl(217, 32%, 17%);
-  --primary: hsl(248, 83%, 65%);
+  --primary: hsl(217, 91%, 60%);
   --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(268, 77%, 69%);
+  --secondary: hsl(199, 89%, 48%);
   --secondary-foreground: hsl(210, 40%, 98%);
   --accent: hsl(188, 94%, 43%);
   --accent-foreground: hsl(210, 40%, 98%);
@@ -115,7 +115,7 @@
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, hsl(248, 83%, 65%), hsl(320, 65%, 65%), hsl(188, 94%, 43%), hsl(220, 90%, 56%));
+    background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(199, 89%, 48%), hsl(188, 94%, 43%), hsl(220, 90%, 56%));
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

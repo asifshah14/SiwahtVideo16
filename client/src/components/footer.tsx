@@ -1,11 +1,7 @@
-import { useState } from "react";
 import { Linkedin, Github, Mail, Phone, MapPin } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 
-import PrivacyPolicy from "./privacy-policy";
-
 export default function Footer() {
-  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -47,7 +43,7 @@ export default function Footer() {
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white border-t border-slate-700/50 relative overflow-hidden" role="contentinfo">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500" />
       <div className="max-w-7xl mx-auto px-4 xs:px-6 lg:px-8 py-12 xs:py-16 relative z-10">
         {/* Main Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
@@ -161,20 +157,6 @@ export default function Footer() {
                     Get Quote
                   </button>
                 </li>
-                <li>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowPrivacyPolicy(true);
-                    }}
-                    className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2 group"
-                    data-testid="footer-privacy"
-                    type="button"
-                  >
-                    <span className="w-1 h-1 bg-primary rounded-full group-hover:bg-white transition-colors"></span>
-                    Privacy Policy
-                  </button>
-                </li>
 
               </ul>
             </nav>
@@ -186,7 +168,7 @@ export default function Footer() {
             <div className="flex gap-4">
               <a
                 href="https://www.instagram.com/siwahtofficial/"
-                className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-700 hover:from-pink-500/20 hover:to-purple-500/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 border border-slate-600/30 hover:border-pink-500/50"
+                className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-700 hover:from-pink-500/20 hover:to-rose-500/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 border border-slate-600/30 hover:border-pink-500/50"
                 aria-label="Follow us on Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -217,11 +199,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      {/* Privacy Policy Modal */}
-      <PrivacyPolicy
-        isOpen={showPrivacyPolicy}
-        onClose={() => setShowPrivacyPolicy(false)}
-      />
     </footer>
   );
 }

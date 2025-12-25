@@ -53,8 +53,8 @@ export default function VideoAds() {
     },
     {
       icon: Sparkles,
-      iconColor: "text-purple-600",
-      bgColor: "bg-purple-100",
+      iconColor: "text-cyan-600",
+      bgColor: "bg-cyan-100",
       title: "Cinematic Excellence",
       description: "4K resolution, professional color grading, and seamless transitions that rival traditional production houses."
     }
@@ -138,7 +138,7 @@ export default function VideoAds() {
                             }}
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-cyan-600/30"></div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                         <div className="relative z-10 h-full flex items-center justify-center">
@@ -161,7 +161,7 @@ export default function VideoAds() {
                         {/* Video Timeline */}
                         <div className="absolute bottom-4 left-4 right-4">
                           <div className="bg-white/20 backdrop-blur-sm rounded-full h-2 overflow-hidden">
-                            <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-full w-1/3 rounded-full"></div>
+                            <div className="bg-gradient-to-r from-blue-500 to-cyan-600 h-full w-1/3 rounded-full"></div>
                           </div>
                         </div>
                       </div>)
@@ -169,7 +169,7 @@ export default function VideoAds() {
                   </div>
                 ) : (
                   <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl aspect-video relative overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-cyan-600/30"></div>
                     <div className="relative z-10 h-full flex items-center justify-center">
                       <div className="text-center text-white">
                         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-4 mx-auto shadow-2xl floating-animation">
@@ -183,7 +183,7 @@ export default function VideoAds() {
                     {/* Video Timeline */}
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-white/20 backdrop-blur-sm rounded-full h-2 overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-full w-1/3 rounded-full"></div>
+                        <div className="bg-gradient-to-r from-blue-500 to-cyan-600 h-full w-1/3 rounded-full"></div>
                       </div>
                     </div>
                   </div>
