@@ -1,3 +1,19 @@
 {
-  "media": []
+  "media": [
+    {
+      "id": "92d2f03a-0d47-4771-94ed-fa9aa30b7ccb",
+      "title": "hol",
+      "category": "AI Video Studio",
+      "fileType": "video",
+      "originalFilename": "https://gumlet.tv/watch/694bfeb6b122cbf1763bdd74",
+      "compressedFilePath": "https://gumlet.tv/watch/694bfeb6b122cbf1763bdd74",
+      "thumbnailPath": null,
+      "duration": "0",
+      "fileSize": "External",
+      "isExternalLink": true,
+      "metadata": null,
+      "createdAt": "2025-12-25T10:02:00.443Z",
+      "updatedAt": "2025-12-25T10:02:00.443Z"
+    }
+  ]
 }
