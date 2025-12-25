@@ -179,7 +179,7 @@ export default function InteractiveAvatars() {
 
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-[3/4] relative overflow-hidden shadow-2xl">
                 {hasVideo ? (
-                  <div className="video-player-wrapper relative w-full h-full">
+                  <div className="video-player-wrapper absolute inset-0">
                     <video
                       ref={videoRef}
                       src={demoVideoUrl}
@@ -211,15 +211,15 @@ export default function InteractiveAvatars() {
                     </div>
                   </div>
                 ) : (
-                  <div className="relative w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl mb-4">
                       <MessageSquare className="h-12 w-12 text-white" />
                     </div>
-                    <p className="text-white/80 text-sm mb-4">Interactive avatar demo coming soon</p>
+                    <p className="text-white text-base font-medium mb-4">Interactive avatar demo coming soon</p>
                     <Button
                       onClick={scrollToContact}
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Request Demo
                     </Button>
